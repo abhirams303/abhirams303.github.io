@@ -1,0 +1,27 @@
+title: Multi-Modal Movie Genre Classification
+email: abhirams303@gmail.com
+description: "Fusion of plot text and poster imagery for multi-label genre prediction."
+url: "https://abhirams303.github.io"   # when published
+baseurl: ""                            # “” for user-page repos
+github_username:  abhirams303
+
+remote_theme: janczizikow/sleek  # ← correct spelling / owner
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-remote-theme
+
+defaults:  # all pages inherit layout : page
+  -
+    scope:
+      path: "_pages"
+    values:
+      layout: page
+      nav: true  # sleek adds to navbar
+
+sass:
+  load_paths:
+    - _sass
+  additional_import_paths:
+    - assets/css
+  style: compressed

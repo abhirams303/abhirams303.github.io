@@ -1,0 +1,49 @@
+---
+---
+
+/* --------------------------------------------------------------------
+   override.scss – loads *after* sleek’s main.css
+   ------------------------------------------------------------------ */
+
+/* 1) overall page width + smooth scroll */
+html { scroll-behavior: smooth; }
+.wrapper, main { max-width: 950px; margin: 0 auto; padding: 2rem 1rem; }
+
+/* 2) header bar */
+$primary: #d62828;            // a vivid red-orange accent
+$dark:    #101010;            // near-black background
+$light:   #f8f9fa;
+
+/* sticky bar */
+.site-header {
+  position: sticky; top: 0; z-index: 2000;
+  background: $dark; color: $light;
+  box-shadow: 0 0 8px rgba(#000,.4);
+
+  .container {                        /* flex row */
+    display: flex; justify-content: space-between;
+    align-items: center; max-width: 1100px; margin: 0 auto;
+    padding: .75rem 1rem;
+  }
+
+  .brand a {
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: $light;
+    text-decoration: none;
+  }
+
+  .main-nav ul {                 /* horizontal list */
+    list-style: none; margin: 0; padding: 0; display: flex; gap: 1.25rem;
+  }
+  .main-nav a {
+    color: $light; text-decoration: none; font-weight: 600; font-size: .9rem;
+    border-bottom: 2px solid transparent; transition: all .2s;
+    &:hover { border-color: $primary; color: $primary; }
+  }
+}
+
+/* 3) section spacing */
+section { padding: 4rem 0 2rem; }
+section:first-of-type { padding-top: 6rem; }      // clears the sticky bar
+section h2 { text-transform: uppercase; margin-bottom: 1.25rem; }

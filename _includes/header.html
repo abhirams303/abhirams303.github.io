@@ -1,0 +1,18 @@
+{%- comment -%}  _includes/header.html  {%- endcomment -%}
+<header class="site-header">
+  <div class="container">
+    <h1 class="brand">
+      <a href="{{ '/' | relative_url }}">{{ site.title }}</a>
+    </h1>
+
+    <nav class="main-nav">
+      <ul>
+        {%- assign menu = "About|Data|Classifier|Web App|Topic Modelling|Run Code|Contributors" | split: "|" -%}
+        {%- for item in menu -%}
+          {%- assign id = item | downcase | replace: " ", "-" -%}
+          <li><a href="#{{ id }}">{{ item }}</a></li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+  </div>
+</header>

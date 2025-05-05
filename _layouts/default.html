@@ -1,0 +1,34 @@
+---
+# Default outer frame – every page inherits from this
+layout: null
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+
+    <!-- sleek’s CSS -->
+    <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+    <!-- your overrides (compiled from override.scss) -->
+    <link rel="stylesheet" href="{{ '/assets/css/override.css' | relative_url }}">
+
+
+
+    <!-- Optional: Inter variable font (tiny) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  </head>
+
+  <body>
+    {% include header.html %}
+
+    <!-- page content -->
+    <main class="wrapper-narrow">
+      {{ content }}
+    </main>
+
+    {% include footer.html %}
+  </body>
+</html>
