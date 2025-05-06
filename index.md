@@ -60,7 +60,31 @@ We saved all posters using their IMDb IDs for easy access.
 ### Exploratory Data Analysis
 {:#exploratory-data-analysis}
 
-*Placeholder for visualizations – genre heatmaps, histogram plots, etc.*
+To get a better sense of our dataset before training any models, we did some quick exploratory analysis focused on how genres are distributed and how often they appear together. Since our task involves multi-label classification, understanding how many genres each movie has and which genres tend to co-occur is especially important.
+
+<figure class="centered-figure">
+  <img class="descriptions-processed centered" src="assets/images/no_of_genres.png" />
+  <figcaption class="centered-caption">Figure: Distribution of the number of genres per movie (Most movies are tagged with only one genre)</figcaption>
+</figure>
+
+From the first plot, we can clearly see that most movies in the dataset (around 15,000) are labeled with **only one genre**. A smaller portion has **two genres**, and even fewer have **three**. This skewed distribution means our dataset is heavily imbalanced when it comes to how many genres are assigned per movie.
+
+<figure class="centered-figure">
+  <img class="descriptions-processed centered" src="assets/images/genres_co_occurance.png" />
+  <figcaption class="centered-caption">Figure: Genre co-occurrence matrix showing how often different genres appear together in the same movie.</figcaption>
+</figure>
+
+The second plot is a co-occurrence matrix that shows how often pairs of genres appear together. Not surprisingly, we see strong co-occurrence between:
+- **Action and Crime**
+- **Horror and Thriller**
+- **Romance and Drama**
+
+These genre combinations are common in real-world movies, so it makes sense they show up a lot here too. On the other hand, some genres like **Comedy** and **Sci-Fi** tend to show up more on their own, with fewer strong pairings.
+
+This matrix also gave us a sanity check that our preprocessing was working correctly — for example, the matrix is symmetrical, which is what we expect (if "Action" co-occurs with "Crime", then "Crime" should co-occur with "Action" by the same amount).
+
+Lastly, while our current model treats genres independently, this matrix shows that there are definitely patterns in how genres are assigned together. It might be worth exploring models or techniques that can actually take these relationships into account, like using label graphs or correlation-aware methods in future work.
+
 
 ---
 {: #label-encoding-and-text-processing .section}
@@ -80,11 +104,6 @@ Before feeding the text into our classifiers, we applied the following preproces
 - Accents were normalized (e.g., “Léon” → “Leon”).
 - Common stopwords were filtered using NLTK.
 - Lemmatization was used to bring tokens to a base form compatible with GloVe embeddings.
-
-<figure class="centered-figure">
-  <img class="descriptions-processed centered" src="assets/images/Description-Processing.png" />
-  <figcaption class="centered-caption">Figure: Text descriptions before and after preprocessing.</figcaption>
-</figure>
 
 # Classifier
 
@@ -148,8 +167,17 @@ For visual genre prediction, we designed and evaluated multiple convolutional ne
   - **Validation loss showed instability**, suggesting limited generalization and ineffective visual feature learning.
 
   We concluded that EfficientNet’s squeeze-excite mechanisms and scaling patterns were not well-suited for the stylized and diverse nature of movie posters.
+<figure class="centered-figure">
+  <img class="descriptions-processed centered" src="assets/images/b0_model.png" />
+  <figcaption class="centered-caption">Figure: EfficientNet-B0 training vs. validation accuracy and loss curves.</figcaption>
+</figure>
 
-- **Final Model – Custom VGG-16 (Fine-Tuned):**  
+<figure class="centered-figure">
+  <img class="descriptions-processed centered" src="assets/images/b2_model.png" />
+  <figcaption class="centered-caption">Figure: EfficientNet-B2 training vs. validation accuracy and loss curves.</figcaption>
+</figure>
+
+- **Custom VGG-16 (Fine-Tuned):**  
   In response, we adopted a custom VGG-16 model. This architecture’s consistent convolutional blocks and simpler structure allowed for more interpretable and spatially focused learning.  
   We froze the earlier layers to retain low-level feature extraction and fine-tuned the deeper convolutional layers. A classification head with dropout was added to handle the multi-label output space.
 
@@ -161,7 +189,7 @@ For visual genre prediction, we designed and evaluated multiple convolutional ne
   Overall, VGG-16 aligned better with the characteristics of our visual data, offering clearer benefits in both training stability and final performance.
 
 <figure class="centered-figure">
-    <img class="descriptions-processed centered" src="assets/images/vgg16_architecture.png" />
+    <img class="descriptions-processed centered" src="assets/images/vgg16_architecture.jpeg" />
     <figcaption class="centered-caption">Figure: Custom VGG-16 layer-wise architecture used for multi-label genre classification.</figcaption>
 </figure>
 
