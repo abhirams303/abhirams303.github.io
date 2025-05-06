@@ -47,6 +47,47 @@ $light:   #f8f9fa;
     border-bottom: 2px solid transparent; transition: all .2s;
     &:hover { border-color: $primary; color: $primary; }
   }
+
+  /* Dropdown styling */
+  .dropdown {
+    position: relative;
+    
+    .dropdown-menu {
+      display: none;  /* Hidden by default */
+      position: absolute;
+      top: 100%;      /* Position it below the parent link */
+      left: 0;
+      background-color: #333;
+      padding: 0;
+      list-style-type: none;
+      min-width: 200px;  /* Minimum width for dropdown */
+      z-index: 1000;    /* Ensure dropdown is above other elements */
+    }
+
+    &:hover {
+      .dropdown-menu {
+        display: block;  /* Show on hover */
+      }
+    }
+
+    .dropdown-menu li {
+      padding: 10px;
+      white-space: nowrap;
+    }
+
+    .dropdown-menu li a {
+      color: $light;
+      text-decoration: none;
+      padding: 10px;
+      display: block;
+      transition: background-color 0.2s ease;
+    }
+
+    .dropdown-menu li a:hover {
+      background-color: $primary;
+      color: $light;
+    }
+  }
 }
 
 /* 3) Section Spacing */
@@ -142,4 +183,3 @@ img {
   font-size: 0.9rem; 
   color: #555; 
 }
-

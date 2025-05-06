@@ -7,10 +7,24 @@
 
     <nav class="main-nav">
       <ul>
-        {%- assign menu = "About|Data|Text Classifier|Vision Classifier|Web App|Demo|Running the Code|Contributions|Discussion & Future Work" | split: "|" -%}
+        {%- assign menu = "About|Data|Classifier|Web App|Results|Code" | split: "|" -%}
         {%- for item in menu -%}
           {%- assign id = item | downcase | replace: " ", "-" -%}
-          <li><a href="#{{ id }}">{{ item }}</a></li>
+          <li>
+            <a href="#{{ id }}">{{ item }}</a>
+            {%- if item == "Classifier" -%}
+              <ul class="dropdown-menu">
+                <li><a href="#text-classifier">Text Classifier</a></li>
+                <li><a href="#vision-classifier">Vision Classifier</a></li>
+              </ul>
+            {%- elsif item == "Results" -%}
+              <ul class="dropdown-menu">
+                <li><a href="#metrics">Metrics</a></li>
+                <li><a href="#error-analysis">Error Analysis</a></li>
+                <li><a href="#future-work">Future Work</a></li>
+              </ul>
+            {%- endif -%}
+          </li>
         {%- endfor -%}
       </ul>
     </nav>
