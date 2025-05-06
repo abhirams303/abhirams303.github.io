@@ -1,108 +1,93 @@
 ---
-layout: default               # keep Sleek’s default template
-title:  Home
-nav_order: 1                  # makes the nav bar order match
+layout: default
+title: Home
+nav_order: 1
 ---
 
-<div class="hero">
-  <!-- hero-title intentionally omitted to avoid duplication -->
-  <p class="hero-lead">
-    A dual-pipeline <strong>(text + poster)</strong> workflow  
-    for multi-label movie-genre prediction.
-  </p>
-
-  <a class="button" href="#data">Jump to the Data ↓</a>
-</div>
-
-
-<!-- ───────────────────────────  ABOUT ──────────────────────────── -->
-
-{: #about .section}
 ## About
 
-This project demonstrates **two complementary approaches** to movie-genre classification:
+This project demonstrates integration of **two approaches** to movie-genre classification:
 
-* **Text model** – NLP on film synopses  
-* **Vision model** – CNN on poster imagery  
+- **Text model** – NLP on film synopses  
+- **Vision model** – CNN on poster imagery  
 
 Together they outperform single-modality baselines.
 
 ---
 
-<!-- ────────────────────────  2. DATA  ───────────────────────────── -->
-<section id="data" class="section">
-  ## Data and Dataset Explanation
-  <div class="sub-nav">
-    <a href="#how-did-we-collect-data">Collection</a> ·
-    <a href="#exploratory-data-analysis">EDA</a> ·
-    <a href="#label-encoding-and-text-processing">Text Prep</a>
-  </div>
+## Data and Dataset Explanation
 
-  ### How did we collect data?
+[Collection](#how-did-we-collect-data) · [EDA](#exploratory-data-analysis) · [Text Prep](#label-encoding-and-text-processing)
 
-  We decided to use the [title.basics.tsv.gz](https://developer.imdb.com/non-commercial-datasets/) from the IMDB website.  
-  Initially, this data contained ~4 million datapoints. Based on the [online statistics](https://www.statista.com/statistics/188658/movie-genres-in-north-america-by-box-office-revenue-since-1995), we cut down the number of genres to 9. We selected the genres with the highest revenue in the statistics provided. After filtering the number of genres to 9, we got a dataset which was mostly skewed towards Drama and Comedy, as shown in the below figure.
+### How did we collect data? 
+{:#how-did-we-collect-data}
 
-  <figure class="centered-figure">
-    <img class="dataset centered" src="assets/images/initial_distribution.png" />
-    <figcaption class="centered-caption">Figure 1: Data distribution per genre after filtering.</figcaption>
-  </figure>
+We started from the [title.basics.tsv.gz](https://developer.imdb.com/non-commercial-datasets/) IMDb dump (~4 M titles, 28 genres).  
+Using [box-office statistics](https://www.statista.com/statistics/188658/movie-genres-in-north-america-by-box-office-revenue-since-1995),  
+we kept the **9 highest-grossing genres**.
 
-  To reduce skewness in the dataset, we leveraged the number of movies available per genre. Since the number of movies per genre was large, we capped the number of movies in each genre to approximately 4,000, as shown below.
+After filtering, the dataset was heavily skewed towards *Drama* and *Comedy* (Figure 1).
 
-  <figure class="centered-figure">
-    <img class="dataset centered" src="assets/images/after_filtering.png" />
-    <figcaption class="centered-caption">Figure 2: Data distribution per genre after capping.</figcaption>
-  </figure>
+<figure class="centered-figure">
+  <img src="assets/images/initial_distribution.png" alt="Initial distribution" />
+  <figcaption style="text-align: center;"><em>Figure 1 · Genre counts after revenue-based filtering.</em></figcaption>
 
-  Next, the problem we faced was that the dataset we used contained only IMDb IDs, titles, and genres. It did not include posters or plots for each movie. So, we used the TMDB API to retrieve the plot summaries and poster URLs while capping the number of images. One can obtain their own API KEY for retrieving the plots and poster URLs by following the steps on the [TMDB API](https://developer.themoviedb.org/reference/intro/getting-started) and [code for getting plots and poster URL using TMDB API](get_data.html).
+</figure>
 
-  TMDB API provides poster URLs and plots using IMDb IDs of the movies. We added the poster URLs and plots of each movie in the dataset in the columns `plot` and `img`. One can download the posters using the [code](download_posters.html).
+To balance the dataset, we capped each genre at ≈ **4,000 films** (Figure 2).
 
-  <figure class="centered-figure">
-    <img class="dataset centered" src="assets/images/textual_data.png" />
-    <figcaption class="centered-caption">Figure 3: Random rows from movies_with_posters.csv</figcaption>
-  </figure>
+<figure class="centered-figure">
+  <img src="assets/images/after_filtering.png" alt="After balancing" />
+  <figcaption style="text-align: center;"><em>Figure 2 · Balanced distribution after capping.</em></figcaption>
+  
+</figure>
 
-  We saved the posters using their IMDb IDs for easy access.
+Next, the problem we faced was that the dataset we used contained only IMDb IDs, titles, and genres. It did not include posters or plots for each movie. So, we used the TMDB API to retrieve plot summaries and poster URLs. One can obtain their own API KEY for retrieving the plots and poster URLs by following the steps on the [TMDB API docs](https://developer.themoviedb.org/reference/intro/getting-started).
 
-  <figure class="centered-figure">
-    <img class="dataset centered" src="assets/images/posters.png" />
-    <figcaption class="centered-caption">Figure 4: Random movie posters.</figcaption>
-  </figure>
+Using the TMDB API, we retrieved poster URLs and plots and added them to our dataset in the columns `plot` and `img`. One can directly download our filtered dataset from [Kaggle](https://www.kaggle.com/datasets/kumaramara/movies-with-poster-urls-and-plots).
 
-  ---
+After downloading the dataset, use this [code](download_posters.html) to download the posters. Make sure you set up your TMDB API key before running the script.
 
-  ### Exploratory Data Analysis
+<figure class="centered-figure">
+  <img src="assets/images/textual_data.png" alt="Textual sample" />
+  <figcaption style="text-align: center;"><em>Figure 3 · Sample rows after enrichment (`plot`, `img`).</em></figcaption>
+</figure>
 
-  *(Placeholder — insert visualizations or commentary here.)*
+We saved all posters using their IMDb IDs for easy access.
 
-  ---
+<figure class="centered-figure">
+  <img src="assets/images/posters.png" alt="Poster sample" />
+  <figcaption style="text-align: center;"><em>Figure 4 · Random movie posters downloaded via TMDB.</em></figcaption>
+</figure>
 
-  ## Label Encoding and Text Processing
 
-  Each film has between one and three genres, allowing us to perform multi-label classification. Unlike multi-class, where only one output is given, multi-label allows multiple predictions to be made at once. Therefore, to represent the multiple combinations of labels in a way that the classifier can understand, we used multi-hot encoding. This is a binary representation where `1` signifies that a description belongs to a genre and `0` means that it does not.
+### Exploratory Data Analysis
+{:#exploratory-data-analysis}
 
-  <figure class="centered-figure">
-    <img class="multihot centered" src="Assets/Images/Multi-Hot.png" />
-    <figcaption class="centered-caption">Figure 5: Multi-hot label encoding of the genres.</figcaption>
-  </figure>
+*Placeholder for visualizations – genre heatmaps, histogram plots, etc.*
 
-  Before a film description is given as input to the classifier, the text must first be converted to a canonical form. It is therefore processed in the following ways:
+---
 
-  - Tokenization to separate the words within sentences
-  - Removal of punctuation and bad characters
-  - Conversion of accented characters to non-accented form (e.g., “Léon” → “Leon”)
-  - Removal of stop words using the NLTK stop word list
-  - Lemmatization to convert words into a form compatible with GloVe word embeddings
+### Label Encoding & Text Processing{:#label-encoding-and-text-processing }
 
-  <figure class="centered-figure">
-    <img class="descriptions-processed centered" src="Assets/Images/Description-Processing.png" />
-    <figcaption class="centered-caption">Figure 6: Processing the film descriptions before and after.</figcaption>
-  </figure>
+Each movie has **1–3 genres**, which makes this a **multi-label classification** task.  
+We represent genre combinations using **multi-hot encoding** (binary vector):
 
-</section>
+![Multi-hot example](/assets/images/Multi-Hot.png)  
+*Figure 5 · Multi-hot binary label matrix.*
 
+---
+
+We applied the following steps to clean the plot descriptions:
+
+- Tokenization of sentences
+- Punctuation and noise removal
+- Conversion of accented characters (e.g., “Léon” → “Leon”)
+- Stopword removal (NLTK)
+- Lemmatization for GloVe embedding compatibility
+
+![Before/after description processing](/assets/images/Description-Processing.png)  
+*Figure 6 · Text cleaning pipeline.*
 
 
 <!-- ============ 3. CLASSIFIER ======================================== -->

@@ -1,3 +1,6 @@
+---
+---
+
 /* --------------------------------------------------------------------
    override.scss – loads *after* sleek’s main.css
    ------------------------------------------------------------------ */
@@ -87,33 +90,6 @@ $light:   #f8f9fa;
   }
 }
 
-/* --- HERO -------------------------- */
-.hero {
-  background: linear-gradient(135deg, #222 0%, #333 100%);
-  color: #fff;
-  text-shadow: 0 0 3px rgba(#000, .6);
-}
-
-.hero-lead {
-  max-width: 560px;
-  font-size: 1.05rem;
-  opacity: .9;
-}
-
-.button {
-  display: inline-block;
-  background: $primary;
-  color: #fff;
-  padding: .55rem 1.3rem;
-  border-radius: 4px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background .15s;
-  &:hover {
-    background: darken($primary, 10%);
-  }
-}
-
 /* 3) Section Spacing */
 section { 
   padding: 4rem 0 2rem; 
@@ -179,7 +155,9 @@ img {
   color: #555; 
 }
 
-/* 6) Ensuring Captions Are Centered */
-figcaption {
-  text-align: center;  /* Keep captions centered under images */
-}
+figure figcaption {
+    text-align: center;  /* Ensure captions under figures are centered */
+  }
+  
+/* justify any element that has .justify */
+.justify { text-align: justify; }
