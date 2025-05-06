@@ -1,6 +1,3 @@
----
----
-
 /* --------------------------------------------------------------------
    override.scss – loads *after* sleek’s main.css
    ------------------------------------------------------------------ */
@@ -90,6 +87,33 @@ $light:   #f8f9fa;
   }
 }
 
+/* --- HERO -------------------------- */
+.hero {
+  background: linear-gradient(135deg, #222 0%, #333 100%);
+  color: #fff;
+  text-shadow: 0 0 3px rgba(#000, .6);
+}
+
+.hero-lead {
+  max-width: 560px;
+  font-size: 1.05rem;
+  opacity: .9;
+}
+
+.button {
+  display: inline-block;
+  background: $primary;
+  color: #fff;
+  padding: .55rem 1.3rem;
+  border-radius: 4px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .15s;
+  &:hover {
+    background: darken($primary, 10%);
+  }
+}
+
 /* 3) Section Spacing */
 section { 
   padding: 4rem 0 2rem; 
@@ -104,40 +128,7 @@ section h2 {
   margin-bottom: 1.25rem; 
 }
 
-/* 4) Hero Section */
-.hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 5rem 1rem;
-  background: linear-gradient(135deg, #111 0%, #333 100%);
-  color: #fff;
-}
-
-.hero h1 { 
-  margin-bottom: 0.5rem; 
-  font-size: 2.2rem; 
-}
-
-.hero p { 
-  margin-bottom: 1.5rem; 
-  opacity: 0.85; 
-}
-
-.hero .button {
-  background: #ff5722;
-  color: #fff;
-  padding: 0.6rem 1.4rem;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: background 0.2s;
-  &:hover { background: #e64a19; }
-}
-
-/* 5) Typography Tweaks */
+/* 4) Typography Tweaks */
 $heading-font-weight: 700;
 $body-font-size: 17px;
 
@@ -149,7 +140,7 @@ body {
   font-size: $body-font-size; 
 }
 
-/* 6) Section Helpers (images and cards) */
+/* 5) Section Helpers (images and cards) */
 img {
   display: block;
   margin: 1rem auto;
@@ -183,3 +174,26 @@ img {
   font-size: 0.9rem; 
   color: #555; 
 }
+
+/* --- New Styles for Centered Figures and Captions ------------------ */
+
+/* Center the figures and captions under images */
+.centered-figure {
+  text-align: center;
+  margin: 0 auto;
+}
+
+.centered-caption {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 0.5rem;
+  text-align: center;
+  font-style: italic;
+}
+
+.dataset, .multihot, .descriptions-processed {
+  max-width: 100%;
+  height: auto;
+}
+
+/* --- End of New Styles ------------------ */
