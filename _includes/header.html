@@ -7,7 +7,7 @@
 
     <nav class="main-nav">
       <ul>
-        {%- assign menu = "About|Data|Classifier|Web App|Topic Modelling|Run Code|Contributors" | split: "|" -%}
+        {%- assign menu = "About|Data|Text Classifier|Vision Classifier|Web App|Demo|Running the Code|Contributions|Discussion & Future Work" | split: "|" -%}
         {%- for item in menu -%}
           {%- assign id = item | downcase | replace: " ", "-" -%}
           <li><a href="#{{ id }}">{{ item }}</a></li>

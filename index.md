@@ -166,23 +166,18 @@ Random posters (stored as `posters/{imdb_id}.jpg`)
     <tbody>
       <tr>
         <td>Abhiram S</td>
-        <td>Text modelling 📜</td>
+        <td>Text modelling and Website Building</td>
         <td><a href="https://github.com/abhirams303" target="_blank">@abhirams303</a></td>
       </tr>
       <tr>
-        <td>Teammate 2</td>
-        <td>Image modelling 🖼️</td>
-        <td>—</td>
-      </tr>
-      <tr>
-        <td>Teammate 3</td>
-        <td>Front-end 🌐</td>
+        <td>Satish Amara</td>
+        <td>EDA and Image modelling </td>
         <td>—</td>
       </tr>
     </tbody>
   </table>
 
-  <p><em>Course: Basics of AI · Prof. XYZ, Spring 2025</em></p>
+  <p><em>Course: Basics of AI · Prof. Jue Guo, Spring 2025</em></p>
 </section>
 
 
@@ -284,13 +279,39 @@ Before a film description is given as input to the classifier, the text must fir
 </figure>
 
 
-<!-- ───────────────────────── TEXT MODEL ────────────────────────── -->
+<!-- ─────────────────────  TEXT MODEL ───────────────────── -->
 
 {: #text-model .section}
-## Text Model
+## 2 Text Model Experiments
 
-*Bi-LSTM* with pretrained **GloVe-6B-100d** embeddings.  
-Key settings: 120 hidden units, 70 % dropout. *(Insert metrics / confusion matrix if you like.)*
+| Model                        | Frozen Layers | Val F1 | Notes                                      |
+|-----------------------------|---------------|--------|--------------------------------------------|
+| Bi-LSTM (GloVe-6B-100d)     | –             | 0.43   | 2-layer, 120 hidden, 70% dropout           |
+| DistilBERT-base-uncased     | 3 / 6         | 0.57   | AdamW 3e-5, max_len = 384                  |
+| ELECTRA-small-discriminator | 4 / 12        | 0.62   | best run → saved as `electra_best.pth`     |
+
+---
+
+### Why ELECTRA outperformed the rest
+
+- **Transformers vs LSTM**  Transformers like ELECTRA attend to full plot context simultaneously, making them better suited for long, nuanced synopses. LSTMs struggle with long-range dependencies.
+- **ELECTRA vs DistilBERT/BERT**  ELECTRA’s generator-discriminator pretraining gives it finer-grained token understanding. This helped capture subtleties in our movie plot dataset better than DistilBERT.
+- **Partial fine-tuning**  Unfreezing only the top 8 layers let ELECTRA specialize on our domain while retaining strong general language representations.
+
+---
+
+<details>
+<summary>Training command</summary>
+
+```bash
+python train_electra_transfer.py \
+  --tsv data/final_data.tsv \
+  --epochs 5 --batch 8 --accum 2 \
+  --lr_head 2e-5 --lr_backbone 5e-6 \
+  --max_len 384 --freeze_layers 4 \
+  --warmup_ratio 0.1 --out electra_best.pth
+```
+</details> 
 
 ---
 
