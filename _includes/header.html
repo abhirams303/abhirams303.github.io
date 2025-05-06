@@ -1,32 +1,28 @@
-{%- comment -%}  _includes/header.html  {%- endcomment -%}
 <header class="site-header">
-  <div class="container">
-    <h1 class="brand">
-      <a href="{{ '/' | relative_url }}">{{ site.title }}</a>
-    </h1>
-
-    <nav class="main-nav">
-      <ul>
-        {%- assign menu = "About|Data|Classifier|Web App|Results|Code" | split: "|" -%}
-        {%- for item in menu -%}
-          {%- assign id = item | downcase | replace: " ", "-" -%}
-          <li>
-            <a href="#{{ id }}">{{ item }}</a>
-            {%- if item == "Classifier" -%}
-              <ul class="dropdown-menu">
-                <li><a href="#text-classifier">Text Classifier</a></li>
-                <li><a href="#vision-classifier">Vision Classifier</a></li>
-              </ul>
-            {%- elsif item == "Results" -%}
-              <ul class="dropdown-menu">
-                <li><a href="#metrics">Metrics</a></li>
-                <li><a href="#error-analysis">Error Analysis</a></li>
-                <li><a href="#future-work">Future Work</a></li>
-              </ul>
-            {%- endif -%}
+    <div class="container">
+      <h1 class="brand">
+        <a href="{{ '/' | relative_url }}">{{ site.title }}</a>
+      </h1>
+  
+      <nav class="main-nav">
+        <ul>
+          {%- assign main = "About|Data|Classifier|Web App|Results|Code" | split:'|' -%}
+          {%- for item in main -%}
+            {%- assign id = item | downcase | replace:' ','-' -%}
+            <li><a href="#{{ id }}">{{ item }}</a></li>
+          {%- endfor -%}
+  
+          <li class="dropdown">
+            <a href="#">More ▾</a>
+            <ul class="dropdown-menu">
+              <li><a href="#eda">EDA</a></li>
+              <li><a href="#topic-modelling">Topic Modelling</a></li>
+              <li><a href="#contributors">Contributors</a></li>
+              <li><a href="#future-work">Future Work</a></li>
+            </ul>
           </li>
-        {%- endfor -%}
-      </ul>
-    </nav>
-  </div>
-</header>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  
