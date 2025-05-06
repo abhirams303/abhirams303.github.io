@@ -1,7 +1,12 @@
 ---
-layout: default
+# empty front-matter so Jekyll treats this as a layout file
 ---
+{% include header.html %}
 
-<article class="section">
-  {{ content }}
-</article>
+<main class="page-content">
+  <div class="wrapper">
+    {{ content }}
+  </div>
+</main>
+
+{% include footer.html %}
