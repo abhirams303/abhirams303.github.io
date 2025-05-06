@@ -36,9 +36,14 @@ Together they outperform single-modality baselines.
 
 
 ### How did we collect data?
-<div class= "justify">
-We decided to use the [title.basics.tsv.gz](https://developer.imdb.com/non-commercial-datasets/) from the IMDB website as our base dataset. Initially, this dataset contained ~4 million datapoints with 28 genres. So, we decided to cutdown the number of genres based on the [online statistics](https://www.statista.com/statistics/188658/movie-genres-in-north-america-by-box-office-revenue-since-1995) to 9. We selected the genres with the highest revenue in the statistics provided. After filtering the number of genres to 9, we got a dataset which was mostly skewed towards Drama and Comedy, as shown in the below figure.
+<div class="justify">
+We decided to use the 
+<a href="https://developer.imdb.com/non-commercial-datasets/" target="_blank">title.basics.tsv.gz</a> 
+from the IMDB website as our base dataset. Initially, this dataset contained ~4 million datapoints with 28 genres. So, we decided to cut down the number of genres based on the 
+<a href="https://www.statista.com/statistics/188658/movie-genres-in-north-america-by-box-office-revenue-since-1995" target="_blank">online statistics</a> 
+to 9. We selected the genres with the highest revenue in the statistics provided. After filtering the number of genres to 9, we got a dataset which was mostly skewed towards Drama and Comedy, as shown in the below figure.
 </div>
+
 <figure>
   <img class="dataset centered" src="assets/images/initial_distribution.png" />
   <figcaption>Figure 1: Data distribution per genre after filtering.</figcaption>
@@ -52,9 +57,15 @@ To reduce skewness in the dataset, we leveraged the number of datapoints availab
   <figcaption>Figure 2: Data distribution per genre after capping.</figcaption>
 </figure>
 
-<div class = "justify">
-Next, the problem we faced was that the dataset we used contained only IMDb IDs, titles, and genres. It did not include posters or plots for each movie. So, we used the [TMDB API](https://developer.themoviedb.org/reference/intro/getting-started) to retrieve plot summaries and poster URLs. One can obtain their own API KEY for retrieving the plots and poster URLs by following the steps on the [TMDB API docs](https://developer.themoviedb.org/reference/intro/getting-started). Using TMDB API we retrieved poster URLs and plots and we added the poster URLs and plots of each movie in the dataset in the columns `plot` and `img`. One can directly download our filtered dataset using link [Our dataset](https://www.kaggle.com/datasets/kumaramara/movies-with-poster-urls-and-plots). After downloading our datsaet, one can download the posters using the [code](download_posters.html). Make sure you setup TMDB API key before using the code for downloading posters.
+<div class="justify">
+Next, the problem we faced was that the dataset we used contained only IMDb IDs, titles, and genres. It did not include posters or plots for each movie. So, we used the 
+<a href="https://developer.themoviedb.org/reference/intro/getting-started" target="_blank">TMDB API</a> 
+to retrieve plot summaries and poster URLs. One can obtain their own API KEY for retrieving the plots and poster URLs by following the steps on the 
+<a href="https://developer.themoviedb.org/reference/intro/getting-started" target="_blank">TMDB API docs</a>. Using TMDB API we retrieved poster URLs and plots and we added the poster URLs and plots of each movie in the dataset in the columns <code>plot</code> and <code>img</code>. One can directly download our filtered dataset using link 
+<a href="https://www.kaggle.com/datasets/kumaramara/movies-with-poster-urls-and-plots" target="_blank">Our dataset</a>. After downloading our dataset, one can download the posters using the 
+<a href="download_posters.html" target="_blank">code</a>. Make sure you setup TMDB API key before using the code for downloading posters.
 </div>
+
 <figure>
   <img class="dataset centered" src="assets/images/textual_data.png" />
   <figcaption>Figure 3: Random rows from movies_with_posters.csv</figcaption>
