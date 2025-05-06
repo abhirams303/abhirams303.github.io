@@ -6,11 +6,20 @@
   
       <nav class="main-nav">
         <ul>
-          {%- assign main = "About|Data|Classifier|Web App|Results|Code" | split:'|' -%}
-          {%- for item in main -%}
-            {%- assign id = item | downcase | replace:' ','-' -%}
-            <li><a href="#{{ id }}">{{ item }}</a></li>
-          {%- endfor -%}
+          <li><a href="#about">About</a></li>
+          <li><a href="#data">Data</a></li>
+  
+          <li class="dropdown">
+            <a href="#">Classifier ▾</a>
+            <ul class="dropdown-menu">
+              <li><a href="#text-model">Text Model</a></li>
+              <li><a href="#vision-model">Vision Model</a></li>
+            </ul>
+          </li>
+  
+          <li><a href="#web-app">Web App</a></li>
+          <li><a href="#results">Results</a></li>
+          <li><a href="#code">Code</a></li>
   
           <li class="dropdown">
             <a href="#">More ▾</a>

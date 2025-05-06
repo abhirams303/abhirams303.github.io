@@ -22,24 +22,20 @@ Together they outperform single-modality baselines.
 ### How did we collect data? 
 {:#how-did-we-collect-data}
 
-We started from the [title.basics.tsv.gz](https://developer.imdb.com/non-commercial-datasets/) IMDb dump (~4 M titles, 28 genres).  
-Using [box-office statistics](https://www.statista.com/statistics/188658/movie-genres-in-north-america-by-box-office-revenue-since-1995),  
-we kept the **9 highest-grossing genres**.
+We decided to use the [title.basics.tsv.gz](https://developer.imdb.com/non-commercial-datasets/) from the IMDB website as our base dataset. Initially, this dataset contained ~4 million datapoints with 28 genres. So, we decided to cut down the number of genres based on the [box-office statistics](https://www.statista.com/statistics/188658/movie-genres-in-north-america-by-box-office-revenue-since-1995) to 9. We selected the genres with the highest revenue in the statistics provided. After filtering the number of genres to 9, we got a dataset which was mostly skewed towards Drama and Comedy
 
-After filtering, the dataset was heavily skewed towards *Drama* and *Comedy* (Figure 1).
+After filtering the number of genres to 9, the dataset was heavily skewed towards *Drama* and *Comedy* (Figure 1).
 
 <figure class="centered-figure">
   <img src="assets/images/initial_distribution.png" alt="Initial distribution" />
   <figcaption style="text-align: center;"><em>Figure 1 · Genre counts after revenue-based filtering.</em></figcaption>
-
 </figure>
 
-To balance the dataset, we capped each genre at ≈ **4,000 films** (Figure 2).
+To reduce skewness in the dataset, we leveraged the number of datapoints available per genre. Since the number of movies per genre was large, we capped the number of movies in each genre to approximately  ≈ **4,000 films** as shown below.(Figure 2).
 
 <figure class="centered-figure">
   <img src="assets/images/after_filtering.png" alt="After balancing" />
   <figcaption style="text-align: center;"><em>Figure 2 · Balanced distribution after capping.</em></figcaption>
-  
 </figure>
 
 Next, the problem we faced was that the dataset we used contained only IMDb IDs, titles, and genres. It did not include posters or plots for each movie. So, we used the TMDB API to retrieve plot summaries and poster URLs. One can obtain their own API KEY for retrieving the plots and poster URLs by following the steps on the [TMDB API docs](https://developer.themoviedb.org/reference/intro/getting-started).
@@ -89,37 +85,74 @@ We applied the following steps to clean the plot descriptions:
 ![Before/after description processing](/assets/images/Description-Processing.png)  
 *Figure 6 · Text cleaning pipeline.*
 
+{: #label-encoding-and-text-processing .section}
+## Label Encoding and Text Preprocessing
 
-<!-- ============ 3. CLASSIFIER ======================================== -->
-<section id="classifier" class="section">
-  <h2>Classifier (text-only baseline)</h2>
+To handle multi-label genre classification—where a movie may belong to more than one genre—we used **multi-hot encoding**. Each genre was treated as a binary label (1 if present, 0 otherwise), creating an interpretable target vector.
 
-  <ul>
-    <li><strong>Model</strong>: ELECTRA-small-discriminator</li>
-    <li><strong>Frozen layers</strong>: bottom&nbsp;4&nbsp;/&nbsp;12</li>
-  </ul>
+<figure class="centered-figure">
+  <img class="multihot centered" src="assets/images/Multi-Hot.png" />
+  <figcaption class="centered-caption">Figure: Multi-hot label encoding for genres.</figcaption>
+</figure>
 
-  <h3>Hyper-parameters</h3>
+Before feeding the text into our classifiers, we applied the following preprocessing steps to clean and standardize the plot descriptions:
 
-  <p>epochs 5 batch 8 accum 2</p>
-  <p>max_len 384 lr_head 2e-5 lr_backbone 5e-6</p>
+- Words were tokenized to isolate sentence units.
+- Special characters and punctuation were removed.
+- Accents were normalized (e.g., “Léon” → “Leon”).
+- Common stopwords were filtered using NLTK.
+- Lemmatization was used to bring tokens to a base form compatible with GloVe embeddings.
 
-  <p><strong>Validation</strong>: <code>P 0.580 R 0.668 F1 0.620</code> (threshold 0.30)</p>
+<figure class="centered-figure">
+  <img class="descriptions-processed centered" src="assets/images/Description-Processing.png" />
+  <figcaption class="centered-caption">Figure: Text descriptions before and after preprocessing.</figcaption>
+</figure>
 
-  <details>
-    <summary>Training command</summary>
 
-    ```bash
-    python train_electra_transfer.py \
-      --tsv final_data.tsv \
-      --epochs 5 --batch 8 --accum 2 \
-      --lr_head 2e-5 --lr_backbone 5e-6 \
-      --max_len 384 --freeze_layers 4 \
-      --warmup_ratio 0.1 --out electra_best.pth
-    warmup 10 %
-    ```
-  </details>
-</section>
+{: #text-model .section}
+## Text Classification Model
+
+We explored multiple architectures for textual movie genre classification, including both **Recurrent Neural Networks (LSTM)** and **Transformer-based models**. The goal was to predict one or more genres from the movie synopsis, given its multi-label nature.
+
+### Modeling Choices and Rationale
+
+- **Initial Attempt – BiLSTM:**  
+  Our initial model used a bidirectional LSTM with 120 hidden units, GloVe embeddings, and a 70% dropout layer. While this architecture captured sequential dependencies, it struggled to generalize well due to the limited size and variability of the dataset. Loss plateaus and modest F1 scores led us to explore Transformer-based models.
+
+- **Transformer Models – DistilBERT and ELECTRA-Small:**  
+  We next experimented with lightweight Transformers. DistilBERT, a distilled version of BERT, was faster and offered some performance gains. However, we found **ELECTRA-Small** to consistently outperform it due to its **discriminator-style pretraining**, which is more sample-efficient for classification tasks.  
+  ELECTRA benefits from **bidirectional context** and **pretraining that better aligns with discriminative classification**, making it particularly suitable for genre prediction from apt length plot texts.
+
+### Final Text Model – ELECTRA-Small
+
+The final architecture consisted of an **ELECTRA-Small encoder** followed by a **fully connected classification head**. The classifier predicted a 9-dimensional multi-label output (one for each genre), activated through a sigmoid layer.
+
+#### Hyperparameters:
+- **Model**: ELECTRA-Small (`google/electra-small-discriminator`)
+- **Loss Function**: BCEWithLogitsLoss (Binary Cross-Entropy for multi-label)
+- **Optimizer**: AdamW
+- **Learning Rate**: 2e-5
+- **Batch Size**: 8
+- **Accum**: 2
+- **Epochs**: 8
+- **Frozen Layers**: 4
+- **Warmup Ratio**: 0.1
+- **Evaluation Metric**: Weighted F1-score, Precision, and Recall
+
+### Comparative Results
+
+Below is a summary table comparing all the text-based models we tested:
+
+| Model              | Train Loss | Val Loss | F1 Score | Precision | Recall |
+|-------------------|------------|----------|----------|-----------|--------|
+| BiLSTM + GloVe    | 0.43       | 0.42     | 0.38     | 0.41      | 0.36   |
+| DistilBERT        | 0.30       | 0.31     | 0.45     | 0.44      | 0.43   |
+| **ELECTRA-Small** | **0.109**   | **0.27** | **0.631** | **0.60**  | **0.673** |
+
+> **Conclusion**: ELECTRA-Small was chosen as the final model for text classification, due to superior F1 and better generalization across genres. Its architectural efficiency and pretraining style proved ideal for this dataset.
+
+---
+
 
 <!-- ============ 4. WEB APP / DEMO ==================================== -->
 <section id="web-app" class="section">
@@ -201,43 +234,6 @@ We applied the following steps to clean the plot descriptions:
   <p><em>Course: Basics of AI · Prof. Jue Guo, Spring 2025</em></p>
 </section>
 
-
-
-<!-- ─────────────────────  TEXT MODEL ───────────────────── -->
-
-{: #text-model .section}
-## 2 Text Model Experiments
-
-| Model                        | Frozen Layers | Val F1 | Notes                                      |
-|-----------------------------|---------------|--------|--------------------------------------------|
-| Bi-LSTM (GloVe-6B-100d)     | –             | 0.43   | 2-layer, 120 hidden, 70% dropout           |
-| DistilBERT-base-uncased     | 3 / 6         | 0.57   | AdamW 3e-5, max_len = 384                  |
-| ELECTRA-small-discriminator | 4 / 12        | 0.62   | best run → saved as `electra_best.pth`     |
-
----
-
-### Why ELECTRA outperformed the rest
-
-- **Transformers vs LSTM**  Transformers like ELECTRA attend to full plot context simultaneously, making them better suited for long, nuanced synopses. LSTMs struggle with long-range dependencies.
-- **ELECTRA vs DistilBERT/BERT**  ELECTRA’s generator-discriminator pretraining gives it finer-grained token understanding. This helped capture subtleties in our movie plot dataset better than DistilBERT.
-- **Partial fine-tuning**  Unfreezing only the top 8 layers let ELECTRA specialize on our domain while retaining strong general language representations.
-
----
-
-<details>
-<summary>Training command</summary>
-
-```bash
-python train_electra_transfer.py \
-  --tsv data/final_data.tsv \
-  --epochs 5 --batch 8 --accum 2 \
-  --lr_head 2e-5 --lr_backbone 5e-6 \
-  --max_len 384 --freeze_layers 4 \
-  --warmup_ratio 0.1 --out electra_best.pth
-```
-</details> 
-
----
 
 <!-- ──────────────────────── VISION MODEL ───────────────────────── -->
 
