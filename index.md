@@ -1,15 +1,15 @@
 ---
-layout: default               # keep Sleek’s default template
-title:  Home
-nav_order: 1                  # makes the nav bar order match
+layout: default
+title : Home
+nav_order: 1
 ---
 
-<!-- ───────────────────────────── HERO ──────────────────────────── -->
-
-# Multi-Modal Movie Genre Classification
-*A dual-pipeline approach to multi-label prediction*  
-
----
+<div class="hero">
+  <h1>{{ site.title }}</h1>
+  <p>A dual-pipeline approach to multi-label movie-genre prediction.<br>
+     Combining plot text and poster imagery from 30 k IMDb titles.</p>
+  <a class="button" href="#data">Jump to the Data ↓</a>
+</div>
 
 <!-- ───────────────────────────  ABOUT ──────────────────────────── -->
 
@@ -52,7 +52,14 @@ To reduce skewness in the dataset, we leveraged the number of datapoints availab
   <figcaption>Figure 2: Data distribution per genre after capping.</figcaption>
 </figure>
 
+<<<<<<< HEAD
 Next, the problem we faced was that the dataset we used contained only IMDb IDs, titles, and genres. It did not include posters or plots for each movie. So, we used the [TMDB API](https://developer.themoviedb.org/reference/intro/getting-started) to retrieve plot summaries and poster URLs. One can obtain their own API KEY for retrieving the plots and poster URLs by following the steps on the [TMDB API docs](https://developer.themoviedb.org/reference/intro/getting-started). Using TMDB API we retrieved poster URLs and plots and we added the poster URLs and plots of each movie in the dataset in the columns `plot` and `img`. One can directly download our filtered dataset using link [Our dataset](https://www.kaggle.com/datasets/kumaramara/movies-with-poster-urls-and-plots). After downloading our datsaet, one can download the posters using the [code](download_posters.html). Make sure you setup TMDB API key before using the code for downloading posters.
+=======
+Next, the problem we faced was that the dataset we used contained only IMDb IDs, titles, and genres. It did not include posters or plots for each movie. So, we used the TMDB API to retrieve the plot summaries and poster URLs while capping the number of images. One can obtain their own API KEY for retrieving the plots and poster URLs by following the steps on the [TMDB API](https://developer.themoviedb.org/reference/intro/getting-started) and [code for getting plots and poster URL using TMDB API](get_data.html).
+
+TMDB API provides poster URLs and plots using IMDb IDs of the movies. We added the poster URLs and plots of each movie in the dataset in the columns `plot` and `img`. One can download the posters using the [code](download_posters.html).
+
+>>>>>>> cebd5c972ef7e40e5e07e70973bfcf9f77081557
 
 <figure>
   <img class="dataset centered" src="assets/images/textual_data.png" />
