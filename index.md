@@ -63,28 +63,6 @@ We saved all posters using their IMDb IDs for easy access.
 *Placeholder for visualizations – genre heatmaps, histogram plots, etc.*
 
 ---
-
-### Label Encoding & Text Processing{:#label-encoding-and-text-processing }
-
-Each movie has **1–3 genres**, which makes this a **multi-label classification** task.  
-We represent genre combinations using **multi-hot encoding** (binary vector):
-
-![Multi-hot example](/assets/images/Multi-Hot.png)  
-*Figure 5 · Multi-hot binary label matrix.*
-
----
-
-We applied the following steps to clean the plot descriptions:
-
-- Tokenization of sentences
-- Punctuation and noise removal
-- Conversion of accented characters (e.g., “Léon” → “Leon”)
-- Stopword removal (NLTK)
-- Lemmatization for GloVe embedding compatibility
-
-![Before/after description processing](/assets/images/Description-Processing.png)  
-*Figure 6 · Text cleaning pipeline.*
-
 {: #label-encoding-and-text-processing .section}
 ## Label Encoding and Text Preprocessing
 
@@ -108,6 +86,7 @@ Before feeding the text into our classifiers, we applied the following preproces
   <figcaption class="centered-caption">Figure: Text descriptions before and after preprocessing.</figcaption>
 </figure>
 
+# Classifier
 
 {: #text-model .section}
 ## Text Classification Model
@@ -150,6 +129,68 @@ Below is a summary table comparing all the text-based models we tested:
 | **ELECTRA-Small** | **0.109**   | **0.27** | **0.631** | **0.60**  | **0.673** |
 
 > **Conclusion**: ELECTRA-Small was chosen as the final model for text classification, due to superior F1 and better generalization across genres. Its architectural efficiency and pretraining style proved ideal for this dataset.
+
+---
+
+{: #vision-model .section}
+## Vision Classification Model
+
+For visual genre prediction, we designed and evaluated multiple convolutional neural network (CNN) architectures using movie poster images. The aim was to classify one or more genres based on the posters, considering the multi-label nature of the task.
+
+### Modeling Choices and Rationale
+
+- **Initial Attempt – EfficientNet-B0 and EfficientNet-B2 (Transfer Learning):**  
+  We started with EfficientNet variants (B0 and B2) using a transfer learning approach. These models were initialized with pre-trained ImageNet weights, and only the final classification head was replaced. The new head included a dropout layer and a sigmoid-activated dense layer for multi-label outputs.
+
+  Despite EfficientNet’s theoretical efficiency, both models failed to yield strong performance:
+  - **Validation accuracy remained low and volatile**, fluctuating between 10–14% across epochs.
+  - **Training improvements were minimal**, and metrics such as F1 and precision hovered below 0.15.
+  - **Validation loss showed instability**, suggesting limited generalization and ineffective visual feature learning.
+
+  We concluded that EfficientNet’s squeeze-excite mechanisms and scaling patterns were not well-suited for the stylized and diverse nature of movie posters.
+
+- **Final Model – Custom VGG-16 (Fine-Tuned):**  
+  In response, we adopted a custom VGG-16 model. This architecture’s consistent convolutional blocks and simpler structure allowed for more interpretable and spatially focused learning.  
+  We froze the earlier layers to retain low-level feature extraction and fine-tuned the deeper convolutional layers. A classification head with dropout was added to handle the multi-label output space.
+
+  This pivot yielded **significantly better results**:
+  - F1-score improved to approximately **0.42**
+  - Precision and recall saw notable increases
+  - Loss curves were more stable and consistent
+
+  Overall, VGG-16 aligned better with the characteristics of our visual data, offering clearer benefits in both training stability and final performance.
+
+<figure class="centered-figure">
+    <img class="descriptions-processed centered" src="assets/images/vgg16_architecture.png" />
+    <figcaption class="centered-caption">Figure: Custom VGG-16 layer-wise architecture used for multi-label genre classification.</figcaption>
+</figure>
+
+### Final Vision Model – VGG-16 (Fine-Tuned)
+
+The final model used a **pretrained VGG-16** as the feature extractor, with a custom classification head built for multi-label sigmoid outputs. Selective fine-tuning was applied to the later layers to adapt the model to genre prediction from poster imagery.
+
+#### Hyperparameters:
+- **Model**: VGG-16 (`torchvision.models.vgg16(pretrained=True)`)
+- **Loss Function**: BCEWithLogitsLoss (Binary Cross-Entropy for multi-label)
+- **Optimizer**: Adam
+- **Learning Rate**: 1e-4
+- **Batch Size**: 16
+- **Dropout Rate**: 0.5
+- **Frozen Layers**: All layers up to `conv4_1`
+- **Epochs**: 20
+- **Evaluation Metric**: Weighted F1-score, Precision, and Recall
+
+### Comparative Results
+
+Below is a summary table comparing the performance of the vision-based models:
+
+| Model              | Train Loss | Val Loss | F1 Score | Precision | Recall |
+|-------------------|------------|----------|----------|-----------|--------|
+| EfficientNet-B0   | 0.49       | 0.45     | 0.13     | 0.11      | 0.14   |
+| EfficientNet-B2   | 0.51       | 0.45     | 0.12     | 0.10      | 0.12   |
+| **VGG-16 (Final)** | **0.28**   | **0.30** | **0.421** | **0.39**  | **0.44** |
+
+> **Conclusion**: VGG-16 emerged as the most effective vision model for our task. Its consistent structure and spatial focus allowed for better generalization on movie poster data. Compared to EfficientNet, it achieved superior results in F1, precision, and recall, satisfying our need for reliable visual classification.
 
 ---
 
@@ -234,17 +275,6 @@ Below is a summary table comparing all the text-based models we tested:
   <p><em>Course: Basics of AI · Prof. Jue Guo, Spring 2025</em></p>
 </section>
 
-
-<!-- ──────────────────────── VISION MODEL ───────────────────────── -->
-
-{: #vision-model .section}
-## Vision Model
-
-Fine-tuned **EfficientNet-B0** on movie posters for multi-label prediction.  
-(Mixup, random crop, colour-jitter augmentations.)
-
----
-
 {: #webapp .section}
 ## Web Application
 
@@ -261,18 +291,3 @@ Front-end page accepts a plot or poster upload and calls `/predict` with fetch/A
 
 ---
 
-{: #code .section}
-## Running the Code
-
-```bash
-git clone https://github.com/abhirams303/mm-genre-classifier.git
-cd mm-genre-classifier
-
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-
-# reproduce ELECTRA baseline
-python train_electra_transfer.py --tsv data/final_data.tsv ...
-
-# launch demo
-cd src/webapp && python app.py
