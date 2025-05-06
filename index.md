@@ -41,14 +41,14 @@ We decided to use the [title.basics.tsv.gz](https://developer.imdb.com/non-comme
 Initially, this data contained ~4 million datapoints. Based on the [online statistics](https://www.statista.com/statistics/188658/movie-genres-in-north-america-by-box-office-revenue-since-1995), we cut down the number of genres to 9. We selected the genres with the highest revenue in the statistics provided. After filtering the number of genres to 9, we got a dataset which was mostly skewed towards Drama and Comedy, as shown in the below figure.
 
 <figure>
-  <img class="dataset centered" src="assets/Images/initial_distribution.png" />
+  <img class="dataset centered" src="assets/images/initial_distribution.png" />
   <figcaption>Figure 1: Data distribution per genre after filtering.</figcaption>
 </figure>
 
 To reduce skewness in the dataset, we leveraged the number of movies available per genre. Since the number of movies per genre was large, we capped the number of movies in each genre to approximately 4,000, as shown below.
 
 <figure>
-  <img class="dataset centered" src="assets/Images/after_filtering.png" />
+  <img class="dataset centered" src="assets/images/after_filtering.png" />
   <figcaption>Figure 2: Data distribution per genre after capping.</figcaption>
 </figure>
 
