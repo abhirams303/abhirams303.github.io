@@ -57,14 +57,14 @@ Next, the problem we faced was that the dataset we used contained only IMDb IDs,
 We added the poster URLs and plots of each movie in the dataset in the columns `plot` and `img`. One can download the posters using the [code](download_posters.html).
 
 <figure>
-  <img class="dataset centered" src="assets/Images/textual_data.png" />
+  <img class="dataset centered" src="assets/images/textual_data.png" />
   <figcaption>Figure 3: Random rows from movies_with_posters.csv</figcaption>
 </figure>
 
 We saved the posters using their IMDb IDs for easy access.
 
 <figure>
-  <img class="dataset centered" src="../assets/Images/posters.png" />
+  <img class="dataset centered" src="assets/images/posters.png" />
   <figcaption>Figure 4: Random movie posters.</figcaption>
 </figure>
 
