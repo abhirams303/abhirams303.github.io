@@ -93,7 +93,7 @@ Lastly, while our current model treats genres independently, this matrix shows t
 To handle multi-label genre classification—where a movie may belong to more than one genre—we used **multi-hot encoding**. Each genre was treated as a binary label (1 if present, 0 otherwise), creating an interpretable target vector.
 
 <figure class="centered-figure">
-  <img class="multihot centered" src="assets/images/Multi-Hot.png" />
+  <img class="multihot centered" src="assets/images/multi_hot.png" />
   <figcaption class="centered-caption">Figure: Multi-hot label encoding for genres.</figcaption>
 </figure>
 
