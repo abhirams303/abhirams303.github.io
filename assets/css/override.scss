@@ -117,6 +117,8 @@ $light:   #f8f9fa;
 /* 3) Section Spacing */
 section { 
   padding: 4rem 0 2rem; 
+  text-align: justify;  /* Apply justification here */
+  line-height: 1.6;     /* Improve readability */
 }
 
 section:first-of-type { 
@@ -137,7 +139,9 @@ h1, h2, h3 {
 }
 
 body { 
-  font-size: $body-font-size; 
+  font-size: $body-font-size;
+  text-align: justify;  /* Justify the text globally */
+  line-height: 1.6;     /* Ensure consistent line height for text */
 }
 
 /* 5) Section Helpers (images and cards) */
@@ -175,31 +179,7 @@ img {
   color: #555; 
 }
 
-<<<<<<< HEAD
-/* --- New Styles for Centered Figures and Captions ------------------ */
-
-/* Center the figures and captions under images */
-.centered-figure {
-  text-align: center;
-  margin: 0 auto;
+/* 6) Ensuring Captions Are Centered */
+figcaption {
+  text-align: center;  /* Keep captions centered under images */
 }
-
-.centered-caption {
-  font-size: 0.9rem;
-  color: #555;
-  margin-top: 0.5rem;
-  text-align: center;
-  font-style: italic;
-}
-
-.dataset, .multihot, .descriptions-processed {
-  max-width: 100%;
-  height: auto;
-}
-
-/* --- End of New Styles ------------------ */
-=======
-.justify {
-  text-align: justify;
-}
->>>>>>> 1602ff29c825c06166b02e4cb801888fcba55b54

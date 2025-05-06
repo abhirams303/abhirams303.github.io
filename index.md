@@ -3,6 +3,7 @@ layout: default               # keep Sleek’s default template
 title:  Home
 nav_order: 1                  # makes the nav bar order match
 ---
+
 <div class="hero">
   <!-- hero-title intentionally omitted to avoid duplication -->
   <p class="hero-lead">
@@ -39,33 +40,31 @@ Together they outperform single-modality baselines.
 
   ### How did we collect data?
 
-### How did we collect data?
-<div class="justify">
-We decided to use the 
-<a href="https://developer.imdb.com/non-commercial-datasets/" target="_blank">title.basics.tsv.gz</a> 
-from the IMDB website as our base dataset. Initially, this dataset contained ~4 million datapoints with 28 genres. So, we decided to cut down the number of genres based on the 
-<a href="https://www.statista.com/statistics/188658/movie-genres-in-north-america-by-box-office-revenue-since-1995" target="_blank">online statistics</a> 
-to 9. We selected the genres with the highest revenue in the statistics provided. After filtering the number of genres to 9, we got a dataset which was mostly skewed towards Drama and Comedy, as shown in the below figure.
-</div>
+  We decided to use the [title.basics.tsv.gz](https://developer.imdb.com/non-commercial-datasets/) from the IMDB website.  
+  Initially, this data contained ~4 million datapoints. Based on the [online statistics](https://www.statista.com/statistics/188658/movie-genres-in-north-america-by-box-office-revenue-since-1995), we cut down the number of genres to 9. We selected the genres with the highest revenue in the statistics provided. After filtering the number of genres to 9, we got a dataset which was mostly skewed towards Drama and Comedy, as shown in the below figure.
+
+  <figure class="centered-figure">
+    <img class="dataset centered" src="assets/images/initial_distribution.png" />
+    <figcaption class="centered-caption">Figure 1: Data distribution per genre after filtering.</figcaption>
+  </figure>
 
   To reduce skewness in the dataset, we leveraged the number of movies available per genre. Since the number of movies per genre was large, we capped the number of movies in each genre to approximately 4,000, as shown below.
 
-<div class = "justify">
-To reduce skewness in the dataset, we leveraged the number of datapoints available per genre. Since the number of movies per genre was large, we capped the number of movies in each genre to approximately 4,000, as shown below.
-</div>
-<figure>
-  <img class="dataset centered" src="assets/images/after_filtering.png" />
-  <figcaption>Figure 2: Data distribution per genre after capping.</figcaption>
-</figure>
+  <figure class="centered-figure">
+    <img class="dataset centered" src="assets/images/after_filtering.png" />
+    <figcaption class="centered-caption">Figure 2: Data distribution per genre after capping.</figcaption>
+  </figure>
 
-<div class="justify">
-Next, the problem we faced was that the dataset we used contained only IMDb IDs, titles, and genres. It did not include posters or plots for each movie. So, we used the 
-<a href="https://developer.themoviedb.org/reference/intro/getting-started" target="_blank">TMDB API</a> 
-to retrieve plot summaries and poster URLs. One can obtain their own API KEY for retrieving the plots and poster URLs by following the steps on the 
-<a href="https://developer.themoviedb.org/reference/intro/getting-started" target="_blank">TMDB API docs</a>. Using TMDB API we retrieved poster URLs and plots and we added the poster URLs and plots of each movie in the dataset in the columns <code>plot</code> and <code>img</code>. One can directly download our filtered dataset using link 
-<a href="https://www.kaggle.com/datasets/kumaramara/movies-with-poster-urls-and-plots" target="_blank">Our dataset</a>. After downloading our dataset, one can download the posters using the 
-<a href="download_posters.html" target="_blank">code</a>. Make sure you setup TMDB API key before using the code for downloading posters.
-</div>
+  Next, the problem we faced was that the dataset we used contained only IMDb IDs, titles, and genres. It did not include posters or plots for each movie. So, we used the TMDB API to retrieve the plot summaries and poster URLs while capping the number of images. One can obtain their own API KEY for retrieving the plots and poster URLs by following the steps on the [TMDB API](https://developer.themoviedb.org/reference/intro/getting-started) and [code for getting plots and poster URL using TMDB API](get_data.html).
+
+  TMDB API provides poster URLs and plots using IMDb IDs of the movies. We added the poster URLs and plots of each movie in the dataset in the columns `plot` and `img`. One can download the posters using the [code](download_posters.html).
+
+  <figure class="centered-figure">
+    <img class="dataset centered" src="assets/images/textual_data.png" />
+    <figcaption class="centered-caption">Figure 3: Random rows from movies_with_posters.csv</figcaption>
+  </figure>
+
+  We saved the posters using their IMDb IDs for easy access.
 
   <figure class="centered-figure">
     <img class="dataset centered" src="assets/images/posters.png" />
@@ -103,6 +102,7 @@ to retrieve plot summaries and poster URLs. One can obtain their own API KEY for
   </figure>
 
 </section>
+
 
 
 <!-- ============ 3. CLASSIFIER ======================================== -->
