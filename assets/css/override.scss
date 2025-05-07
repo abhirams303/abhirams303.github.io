@@ -5,69 +5,130 @@
    override.scss – loads *after* sleek’s main.css
    ------------------------------------------------------------------ */
 
-/* 1) Overall page width + smooth scroll */
-html { scroll-behavior: smooth; }
-
-.wrapper, main { 
-  max-width: 950px; 
-  margin: 0 auto; 
-  padding: 2rem 1rem; 
+/* --------------------------------------------------------------------
+   0. Theme Variables for Light/Dark Mode (CSS variables only)
+   ------------------------------------------------------------------ */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #101010;
+  --nav-color: #101010;
+  --nav-text-color: #f8f9fa;
+  --accent-color: #d62828;
+  --accent-color-dark: #b71f1f;
 }
 
-/* 2) Header bar */
-$primary: #d62828;            // A vivid red-orange accent
-$dark:    #101010;            // Near-black background
-$light:   #f8f9fa;
+[data-theme='dark'] {
+  --bg-color: #101010;
+  --text-color: #f8f9fa;
+  --nav-color: #1a1a1a;
+  --nav-text-color: #f8f9fa;
+  --accent-color: #f77f00;
+  --accent-color-dark: #cc6600;
+}
 
-/* Sticky header */
+/* --------------------------------------------------------------------
+   1. Global Styling + Smooth Scroll
+   ------------------------------------------------------------------ */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-size: 17px;
+  text-align: justify;
+  line-height: 1.6;
+}
+
+[id] {
+  scroll-margin-top: 90px;
+}
+
+.wrapper, main {
+  max-width: 950px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* --------------------------------------------------------------------
+   2. Sticky Header + Navbar
+   ------------------------------------------------------------------ */
 .site-header {
-  position: sticky; top: 0; z-index: 2000;
-  background: $dark; color: $light;
-  box-shadow: 0 0 8px rgba(#000,.4);
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+  background: var(--nav-color);
+  color: var(--nav-text-color);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
 
-  .container { /* flex row */
-    display: flex; justify-content: space-between;
-    align-items: center; max-width: 1100px; margin: 0 auto;
-    padding: .75rem 1rem;
+  .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0.75rem 1rem;
   }
 
   .brand a {
-    font-weight: 700;
-    font-size: 1.15rem;
-    color: $light;
+    font-weight: 800;
+    font-size: 1.35rem;
+    letter-spacing: -0.5px;
+    color: var(--nav-text-color);
     text-decoration: none;
   }
 
-  .main-nav ul { /* Horizontal list */
-    list-style: none; margin: 0; padding: 0; display: flex; gap: 1.25rem;
-  }
-  
-  .main-nav a {
-    color: $light; text-decoration: none; font-weight: 600; font-size: .9rem;
-    border-bottom: 2px solid transparent; transition: all .2s;
-    &:hover { border-color: $primary; color: $primary; }
+  .main-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
   }
 
-  /* Dropdown styling */
+  .main-nav a {
+    color: var(--nav-text-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  .theme-toggle {
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--nav-text-color);
+    font-size: 1.2rem;
+    padding: 0.3rem;
+  }
+
   .dropdown {
     position: relative;
-    
+
     .dropdown-menu {
-      display: none;  /* Hidden by default */
+      display: none;
       position: absolute;
-      top: 100%;      /* Position it below the parent link */
+      top: 100%;
       left: 0;
       background-color: #333;
       padding: 0;
       list-style-type: none;
-      min-width: 200px;  /* Minimum width for dropdown */
-      z-index: 1000;    /* Ensure dropdown is above other elements */
+      min-width: 200px;
+      z-index: 1000;
     }
 
-    &:hover {
-      .dropdown-menu {
-        display: block;  /* Show on hover */
-      }
+    &:hover .dropdown-menu {
+      display: block;
     }
 
     .dropdown-menu li {
@@ -76,7 +137,7 @@ $light:   #f8f9fa;
     }
 
     .dropdown-menu li a {
-      color: $light;
+      color: var(--nav-text-color);
       text-decoration: none;
       padding: 10px;
       display: block;
@@ -84,43 +145,47 @@ $light:   #f8f9fa;
     }
 
     .dropdown-menu li a:hover {
-      background-color: $primary;
-      color: $light;
+      background-color: var(--accent-color);
+      color: var(--nav-text-color);
     }
   }
 }
 
-/* 3) Section Spacing */
-section { 
-  padding: 4rem 0 2rem; 
-  text-align: justify;  /* Apply justification here */
-  line-height: 1.6;     /* Improve readability */
+/* --------------------------------------------------------------------
+   3. Section Layout + Headings
+   ------------------------------------------------------------------ */
+section {
+  padding: 4rem 0 2rem;
+  text-align: justify;
+  line-height: 1.6;
 }
 
-section:first-of-type { 
-  padding-top: 6rem; /* Clears the sticky header */
+section:first-of-type {
+  padding-top: 6rem;
 }
 
-section h2 { 
-  text-transform: uppercase; 
-  margin-bottom: 1.25rem; 
+section h2 {
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+  font-weight: 700;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 0.5rem;
 }
 
-/* 4) Typography Tweaks */
-$heading-font-weight: 700;
-$body-font-size: 17px;
-
-h1, h2, h3 { 
-  font-weight: $heading-font-weight; 
+/* --------------------------------------------------------------------
+   4. Typography
+   ------------------------------------------------------------------ */
+h1, h2, h3 {
+  font-weight: 700;
 }
 
-body { 
-  font-size: $body-font-size;
-  text-align: justify;  /* Justify the text globally */
-  line-height: 1.6;     /* Ensure consistent line height for text */
+figure figcaption {
+  text-align: center;
 }
 
-/* 5) Section Helpers (images and cards) */
+/* --------------------------------------------------------------------
+   5. Image Styling
+   ------------------------------------------------------------------ */
 img {
   display: block;
   margin: 1rem auto;
@@ -128,7 +193,9 @@ img {
   height: auto;
 }
 
-/* Simple card for metric blocks */
+/* --------------------------------------------------------------------
+   6. Metric Cards
+   ------------------------------------------------------------------ */
 .metrics {
   display: flex;
   flex-wrap: wrap;
@@ -145,19 +212,48 @@ img {
   text-align: center;
 }
 
-.metric span:first-child { 
-  font-size: 1.8rem; 
-  font-weight: 700; 
+.metric span:first-child {
+  font-size: 1.8rem;
+  font-weight: 700;
 }
 
-.metric span:last-child { 
-  font-size: 0.9rem; 
-  color: #555; 
+.metric span:last-child {
+  font-size: 0.9rem;
+  color: #555;
 }
 
-figure figcaption {
-    text-align: center;  /* Ensure captions under figures are centered */
-  }
-  
-/* justify any element that has .justify */
-.justify { text-align: justify; }
+/* --------------------------------------------------------------------
+   7. Buttons (for links or CTAs)
+   ------------------------------------------------------------------ */
+.button {
+  background-color: var(--accent-color);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-block;
+  margin-top: 1rem;
+  transition: background 0.3s ease;
+}
+
+.button:hover {
+  background-color: var(--accent-color-dark);
+}
+
+/* --------------------------------------------------------------------
+   8. Justify Utility
+   ------------------------------------------------------------------ */
+.justify {
+  text-align: justify;
+}
+
+/* --------------------------------------------------------------------
+   9. Footer Styling
+   ------------------------------------------------------------------ */
+.site-footer {
+  text-align: center;
+  padding: 1.5rem 0;
+  color: #aaa;
+  font-size: 0.9rem;
+}

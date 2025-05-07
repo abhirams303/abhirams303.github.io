@@ -4,7 +4,7 @@ layout: null
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light"> <!-- Enable theme toggling -->
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -15,20 +15,33 @@ layout: null
     <!-- your overrides (compiled from override.scss) -->
     <link rel="stylesheet" href="{{ '/assets/css/override.css' | relative_url }}">
 
-
-
-    <!-- Optional: Inter variable font (tiny) -->
+    <!-- Optional: Inter variable font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   </head>
 
   <body>
     {% include header.html %}
 
-    <!-- page content -->
+    <!-- Page content -->
     <main class="wrapper">
       {{ content }}
     </main>
 
     {% include footer.html %}
+
+    <!-- 🌙 Theme Toggle Script -->
+    <script>
+      function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const savedTheme = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      });
+    </script>
   </body>
 </html>

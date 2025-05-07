@@ -3,19 +3,18 @@ layout: default
 title: Home
 nav_order: 1
 ---
-
 ## About
 
-This project demonstrates integration of **two approaches** to movie-genre classification:
+Welcome to our multi-modal movie genre classification project! 🎬✨
 
-- **Text model** – NLP on film synopses  
-- **Vision model** – CNN on poster imagery  
+Have you ever wondered how a computer might guess what kind of movie you're about to watch — just by reading its plot or glancing at its poster? That’s exactly what we set out to explore!
 
-Together they outperform single-modality baselines.
+This website showcases our journey in building machine learning models that predict movie genres using both the movie’s **plot description** and its **poster image**. By leveraging the power of **text** and **visuals**, we aimed to improve prediction accuracy and understand how each modality contributes to recognizing genres like *Action*, *Comedy*, *Drama*, and more.
 
 ---
 
 ## Data and Dataset Explanation
+{: #data }
 
 [Collection](#how-did-we-collect-data) · [EDA](#exploratory-data-analysis) · [Text Prep](#label-encoding-and-text-processing)
 
@@ -137,29 +136,24 @@ The final architecture consisted of an **ELECTRA-Small encoder** followed by a *
 - **Warmup Ratio**: 0.1
 - **Evaluation Metric**: Weighted F1-score, Precision, and Recall
 
-### Comparative Results
+<figure class="centered-figure">
+  <img class="descriptions-processed centered" src="assets/images/electra_loss_curves.png" />
+  <figcaption class="centered-caption">Figure: Train vs. Validation loss curve for ELECTRA-Small across 8 epochs.</figcaption>
+</figure>
 
-Below is a summary table comparing all the text-based models we tested:
-
-| Model              | Train Loss | Val Loss | F1 Score | Precision | Recall |
-|-------------------|------------|----------|----------|-----------|--------|
-| BiLSTM + GloVe    | 0.43       | 0.42     | 0.38     | 0.41      | 0.36   |
-| DistilBERT        | 0.30       | 0.31     | 0.45     | 0.44      | 0.43   |
-| **ELECTRA-Small** | **0.109**   | **0.27** | **0.631** | **0.60**  | **0.673** |
-
-> **Conclusion**: ELECTRA-Small was chosen as the final model for text classification, due to superior F1 and better generalization across genres. Its architectural efficiency and pretraining style proved ideal for this dataset.
+> Based on performance across training and validation, ELECTRA-Small was selected as our final text model. Detailed evaluation metrics and model comparisons can be found in the [Results & Evaluation](#results) section.
 
 ---
 
 {: #vision-model .section}
 ## Vision Classification Model
 
-For visual genre prediction, we designed and evaluated multiple convolutional neural network (CNN) architectures using movie poster images. The aim was to classify one or more genres based on the posters, considering the multi-label nature of the task.
+For genre prediction using posters, we designed and evaluated multiple convolutional neural network (CNN) architectures using movie poster images. The aim was to classify one or more genres based on the posters, considering the multi-label nature of the task.
 
 ### Modeling Choices and Rationale
 
 - **Initial Attempt – EfficientNet-B0 and EfficientNet-B2 (Transfer Learning):**  
-  We started with EfficientNet variants (B0 and B2) using a transfer learning approach. These models were initialized with pre-trained ImageNet weights, and only the final classification head was replaced. The new head included a dropout layer and a sigmoid-activated dense layer for multi-label outputs.
+  We started with EfficientNet variants (B0 and B2) using a transfer learning approach. These models were initialized with pre-trained default weights, and only the final classification head was replaced. The new head included a dropout layer and a sigmoid-activated dense layer for multi-label outputs.
 
   Despite EfficientNet’s theoretical efficiency, both models failed to yield strong performance:
   - **Validation accuracy remained low and volatile**, fluctuating between 10–14% across epochs.
@@ -200,15 +194,34 @@ The final model used a **pretrained VGG-16** as the feature extractor, with a cu
 #### Hyperparameters:
 - **Model**: VGG-16 (`torchvision.models.vgg16(pretrained=True)`)
 - **Loss Function**: BCEWithLogitsLoss (Binary Cross-Entropy for multi-label)
-- **Optimizer**: Adam
-- **Learning Rate**: 1e-4
-- **Batch Size**: 16
-- **Dropout Rate**: 0.5
-- **Frozen Layers**: All layers up to `conv4_1`
-- **Epochs**: 20
-- **Evaluation Metric**: Weighted F1-score, Precision, and Recall
+- **Optimizer**: RMSProp
+- **Learning Rate**: 1e-3
+- **Batch Size**: 32
+- **Dropout Rate**: 0.6
+- **Frozen Layers**: VGG16 Architecture
+- **Epochs**: 50
+- **Evaluation Metric**: F1-score, Precision, and Recall
 
-### Comparative Results
+---
+
+## Results and Evaluation
+{: #results }
+#### Comparative Results - Text Model
+To evaluate the performance of different text-based models for multi-label genre classification, we tested a BiLSTM baseline, DistilBERT, and ELECTRA-Small. The metrics we focused on were **weighted F1-score**, **precision**, and **recall**, since they better reflect performance in imbalanced multi-label settings.
+
+| Model              | Train Loss | Val Loss | F1 Score | Precision | Recall |
+|-------------------|------------|----------|----------|-----------|--------|
+| BiLSTM + GloVe    | 0.43       | 0.42     | 0.38     | 0.41      | 0.36   |
+| DistilBERT        | 0.30       | 0.31     | 0.45     | 0.44      | 0.43   |
+| **ELECTRA-Small** | **0.109**  | **0.27** | **0.631** | **0.60**  | **0.673** |
+
+From the results, it's clear that **ELECTRA-Small consistently outperformed the other two models**. The BiLSTM model struggled the most, which wasn’t surprising considering its reliance on fixed word embeddings and its difficulty in capturing longer-range dependencies in text. DistilBERT performed better, likely due to its pretraining on larger corpora, but still plateaued in F1 and recall compared to ELECTRA.
+
+What stood out was ELECTRA’s high recall score, which suggests it was better at **not missing relevant genres**, even when multiple were present. This is particularly important in our dataset where movies often belong to overlapping categories like *Romance–Drama* or *Action–Adventure*. The consistent drop in both training and validation loss also reflected stable learning without overfitting.
+
+Overall, ELECTRA-Small offered the best trade-off between precision and recall and was the most reliable model for capturing multiple genres from plot summaries.
+
+#### Comparative Results - Vision Modal
 
 Below is a summary table comparing the performance of the vision-based models:
 
@@ -222,34 +235,23 @@ Below is a summary table comparing the performance of the vision-based models:
 
 ---
 
+#### Per-Genre Performance (VGG-16)
 
-<!-- ============ 4. WEB APP / DEMO ==================================== -->
-<section id="web-app" class="section">
-  <h2>Web App ♟️</h2>
-  <p>A minimal Flask API wraps the fusion model and a small JS front-end consumes it.</p>
-  
-  <figure>
-    <img src="/assets/images/demo.gif" alt="Web-app demo">
-    <figcaption>Interactive demo: paste a plot → top-3 predicted genres with probabilities.</figcaption>
-  </figure>
+<figure class="centered-figure">
+  <img class="descriptions-processed centered" src="assets/images/vgg16_classwise_report.jpeg" />
+  <figcaption class="centered-caption">Figure: Per-class precision, recall, and F1-scores for the VGG-16 model.</figcaption>
+</figure>
 
-  <h3>Run locally</h3>
-  <pre>
-    cd src/webapp
-    pip install -r requirements.txt   # Flask + torch
-    python app.py                     # http://127.0.0.1:5000/
-  </pre>
-</section>
+The per-class metrics reveal which genres were more easily predicted from visual features:
 
-<!-- ============ 5. TOPIC MODELLING / EXPLAIN ======================== -->
-<section id="topic-modelling" class="section">
-  <h2>Topic Modelling &amp; Visual Explainability</h2>
-  <ul>
-    <li><strong>BERTopic</strong> on synopses &rarr; latent clusters (“heist”, “courtroom drama”, “alien invasion”).</li>
-    <li><strong>Grad-CAM</strong> on poster CNN &rarr; genre-specific regions highlighted (e.g. explosions for <em>Action</em>).</li>
-  </ul>
-  <p><em>(Insert screenshots/plots here.)</em></p>
-</section>
+- **Comedy (F1: 0.50)** and **Drama (F1: 0.55)** had the best performance, possibly because these genres have clearer visual cues in poster design (e.g. color palettes, facial expressions, typography).
+- **Thriller**, **Crime**, and **Adventure** saw lower F1-scores (~0.29–0.33), indicating a struggle to distinguish between visually similar or ambiguous posters.
+- Micro, macro, and weighted F1-scores all converged around **0.40**, suggesting the model was consistent across class balance and label frequency.
+
+While not perfect, the vision model showed meaningful contribution — especially in complementing the text-based model, which had different confusion patterns.
+
+> Overall, VGG-16 demonstrated a better grasp of genre-specific visual traits than EfficientNet variants, likely due to its simpler structure being easier to fine-tune on a relatively small and noisy dataset.
+
 
 <!-- ============ 6. REPRODUCIBILITY ================================== -->
 <section id="run-code" class="section">
