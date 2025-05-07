@@ -18,13 +18,18 @@
 }
 
 [data-theme='dark'] {
-  --bg-color: #101010;
-  --text-color: #f8f9fa;
-  --nav-color: #1a1a1a;
-  --nav-text-color: #f8f9fa;
-  --accent-color: #f77f00;
-  --accent-color-dark: #cc6600;
+    --bg-color: #101010;
+    --text-color: #f8f9fa;
+    --nav-color: #5f5959;
+    --nav-text-color: #f8f9fa;
+    --accent-color: #f77f00;
+    --accent-color-dark: #cc6600;
+  
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--text-color);
+    }
 }
+  
 
 /* --------------------------------------------------------------------
    1. Global Styling + Smooth Scroll

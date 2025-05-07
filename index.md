@@ -41,14 +41,14 @@ Next, the problem we faced was that the dataset we used contained only IMDb IDs,
 
 Using the TMDB API, we retrieved poster URLs and plots and added them to our dataset in the columns `plot` and `img`. One can directly download our filtered dataset from [Kaggle](https://www.kaggle.com/datasets/kumaramara/movies-with-poster-urls-and-plots).
 
-After downloading the dataset, use this [code](download_posters.html) to download the posters. Make sure you set up your TMDB API key before running the script.
+After downloading the dataset, one can use this [code](download_posters.html) to download the posters. Make sure you set up your TMDB API key before running the script.
 
 <figure class="centered-figure">
   <img src="assets/images/textual_data.png" alt="Textual sample" />
   <figcaption style="text-align: center;"><em>Figure 3 · Sample rows after enrichment (`plot`, `img`).</em></figcaption>
 </figure>
 
-We saved all posters using their IMDb IDs for easy access.
+We saved all the posters using their IMDb IDs for easy access.
 
 <figure class="centered-figure">
   <img src="assets/images/posters.png" alt="Poster sample" />
@@ -63,26 +63,26 @@ To get a better sense of our dataset before training any models, we did some qui
 
 <figure class="centered-figure">
   <img class="descriptions-processed centered" src="assets/images/no_of_genres.png" />
-  <figcaption class="centered-caption">Figure: Distribution of the number of genres per movie (Most movies are tagged with only one genre)</figcaption>
+  <figcaption style="text-align: center;">Figure: Distribution of the number of genres per movie (Most movies are tagged with only one genre)</figcaption>
 </figure>
 
-From the first plot, we can clearly see that most movies in the dataset (around 15,000) are labeled with **only one genre**. A smaller portion has **two genres**, and even fewer have **three**. This skewed distribution means our dataset is heavily imbalanced when it comes to how many genres are assigned per movie.
+From the first plot, we can clearly see that most movies in the dataset (around 15,000) are labeled with **only one genre**. A smaller portion has **two genres**, and even fewer have **three**. 
 
 <figure class="centered-figure">
   <img class="descriptions-processed centered" src="assets/images/genres_co_occurance.png" />
-  <figcaption class="centered-caption">Figure: Genre co-occurrence matrix showing how often different genres appear together in the same movie.</figcaption>
+  <figcaption style="text-align: center;">Figure: Genre co-occurrence matrix showing how often different genres appear together in the same movie.</figcaption>
 </figure>
 
 The second plot is a co-occurrence matrix that shows how often pairs of genres appear together. Not surprisingly, we see strong co-occurrence between:
 - **Action and Crime**
 - **Horror and Thriller**
-- **Romance and Drama**
+- **Adventure and Action**
 
 These genre combinations are common in real-world movies, so it makes sense they show up a lot here too. On the other hand, some genres like **Comedy** and **Sci-Fi** tend to show up more on their own, with fewer strong pairings.
 
 This matrix also gave us a sanity check that our preprocessing was working correctly — for example, the matrix is symmetrical, which is what we expect (if "Action" co-occurs with "Crime", then "Crime" should co-occur with "Action" by the same amount).
 
-Lastly, while our current model treats genres independently, this matrix shows that there are definitely patterns in how genres are assigned together. It might be worth exploring models or techniques that can actually take these relationships into account, like using label graphs or correlation-aware methods in future work.
+Lastly, while our current model treats genres independently, this matrix shows that there are definitely patterns in how genres are assigned together.
 
 
 ---
@@ -114,7 +114,7 @@ We explored multiple architectures for textual movie genre classification, inclu
 ### Modeling Choices and Rationale
 
 - **Initial Attempt – BiLSTM:**  
-  Our initial model used a bidirectional LSTM with 120 hidden units, GloVe embeddings, and a 70% dropout layer. While this architecture captured sequential dependencies, it struggled to generalize well due to the limited size and variability of the dataset. Loss plateaus and modest F1 scores led us to explore Transformer-based models.
+  Our initial model used a Bidirectional LSTM with 120 hidden units, GloVe embeddings, and dropout layer. While this architecture captured sequential dependencies, it struggled to generalize well due to the limited size and variability of the dataset. Loss plateaus and modest F1 scores led us to explore Transformer-based models.
 
 - **Transformer Models – DistilBERT and ELECTRA-Small:**  
   We next experimented with lightweight Transformers. DistilBERT, a distilled version of BERT, was faster and offered some performance gains. However, we found **ELECTRA-Small** to consistently outperform it due to its **discriminator-style pretraining**, which is more sample-efficient for classification tasks.  
@@ -142,6 +142,11 @@ The final architecture consisted of an **ELECTRA-Small encoder** followed by a *
 </figure>
 
 > Based on performance across training and validation, ELECTRA-Small was selected as our final text model. Detailed evaluation metrics and model comparisons can be found in the [Results & Evaluation](#results) section.
+
+<figure class="centered-figure">
+    <img class="descriptions-processed centered" src="assets/images/electra_architecture.jpeg" />
+    <figcaption class="centered-caption">Figure: Electra architecture used for Text model in multi-label genre classification.</figcaption>
+</figure>
 
 ---
 
@@ -254,70 +259,87 @@ While not perfect, the vision model showed meaningful contribution — especiall
 
 
 <!-- ============ 6. REPRODUCIBILITY ================================== -->
-<section id="run-code" class="section">
+
+<section id="code" class="section">
   <h2>Run Code 🛠️</h2>
-  
   <pre>
-  # 1 · Clone
-  git clone https://github.com/abhirams303/mm-genre-classifier.git
-  cd mm-genre-classifier
+#step 1
+- clone the git repo 'git clone https://github.com/satishamara17/multi-genre-predictor' or download the zip file of our project
 
-  # 2 · Create env
-  python -m venv .venv && source .venv/bin/activate
-  pip install -r requirements.txt        # torch, transformers, pandas …
+#step 2
+- run `pip install -r requirements.txt` to get all libraries used
 
-  # 3 · Re-train
-  python train_electra_transfer.py --tsv final_data.tsv …
+# Step 3
+- Download our dataset using the Kaggle link provided
 
-  # 4 · Generate site assets
-  python notebooks/plots.py
+# step 4
+- Create a API key for TMDB API
+
+# step 5
+- Next use the get_posters code provided above in the data section to download the posters
+
+- for textual part:
+    cd textual
+    python train_electra_transfer.py --tsv final_data.tsv --epochs 8 --batch 8 --accum 2 --lr 2e-5 --max_len 512 --freeze_layers 4 --warmup_ratio 0.1 --out electra_transfer.pth
+
+- for vision part most of the code is written in jupyter notebooks.
   </pre>
 
-  <p>The repository root doubles as this website’s source. A GitHub Actions workflow rebuilds and pushes the static site on every commit to <code>main</code>.</p>
 </section>
 
-<!-- ============ 7. CONTRIBUTORS ==================================== -->
-<section id="contributors" class="section">
-  <h2>Contributors</h2>
+Links to our project :
 
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Role</th>
-        <th>GitHub</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Abhiram S</td>
-        <td>Text modelling and Website Building</td>
-        <td><a href="https://github.com/abhirams303" target="_blank">@abhirams303</a></td>
-      </tr>
-      <tr>
-        <td>Satish Amara</td>
-        <td>EDA and Image modelling </td>
-        <td>—</td>
-      </tr>
-    </tbody>
-  </table>
+Dataset : [kaggle](https://www.kaggle.com/datasets/kumaramara/movies-with-poster-urls-and-plots) 
 
-  <p><em>Course: Basics of AI · Prof. Jue Guo, Spring 2025</em></p>
-</section>
+Code : [git hub repo](https://github.com/satishamara17/multi-genre-predictor)
 
-{: #webapp .section}
-## Web Application
+## Discussion & Future Work
+{:#future-work}
 
-Flask micro-service → loads `fusion_model.pt` and returns top-3 genres.  
-Front-end page accepts a plot or poster upload and calls `/predict` with fetch/AJAX.
+### 🔍 Lessons Learned
+
+This project gave us a hands-on understanding of the challenges and advantages of multi-modal classification. We saw firsthand that:
+
+- **Text-based models** like ELECTRA-Small performed exceptionally well when plots contained rich, descriptive language, especially for genres like *Drama* and *Romance*.
+- **Vision models** struggled more due to variability in poster design, but still added value for genres with distinct aesthetics like *Horror* and *Comedy*.
+- Pretrained models are a powerful starting point, but **fine-tuning is highly dataset-dependent**, especially in multi-label tasks.
+- **Genre overlap and ambiguity** (e.g. *Action vs. Adventure*, *Romance vs. Drama*) remain key challenges, and threshold tuning had a noticeable impact on model performance.
+
+### 🚀 Potential Improvements
+
+If we were to extend this project, we’d focus on:
+
+- **Multi-modal Fusion**: Combining ELECTRA-Small and VGG-16 outputs via feature concatenation or late fusion, potentially with a small neural classifier on top.
+- **Genre Graphs**: Introducing a genre co-occurrence graph to inform predictions and reduce confusion in overlapping genres.
+- **Better Visual Representations**: Exploring CLIP or ViT-based models which might capture deeper semantic connections between posters and language.
+
+> Overall, this project helped clarify the limits of unimodal models and reinforced why multi-modal learning is essential for nuanced tasks like movie genre classification.
+
+
+## Contributors & Their Contributions
+{:#contributors}
+
+This project was a joint effort between two contributors, each responsible for specific components of the multi-modal pipeline. The work was divided in a way that allowed each member to explore different aspects of deep learning while collaborating on key design and evaluation decisions.
 
 ---
 
-{: #topicmodelling .section}
-## Topic Modelling
+###  Abhiram Sribhashyam  
+[UB Person Number : 50560760] 
 
-* **BERTopic** clusters plots into themes (“heist”, “alien invasion”, “courtroom drama”).  
-* **Grad-CAM** reveals poster regions driving the CNN (e.g. explosions ⇒ *Action*).
+**Roles**:  
+- Handled the **text classification pipeline**, implementing and evaluating BiLSTM, DistilBERT, and ELECTRA-Small models.  
+- Managed training, hyperparameter tuning, and validation metric logging for the text models.  
+- Built the entire **project website** using Jekyll, including layout structure, content organization. 
 
 ---
+
+###  Naga Sai Satish Kumar Amara  
+[UB Person Number : 50565990] 
+
+**Roles**:  
+- Took care of **data preprocessing**, including filtering the IMDB metadata and preparing poster image inputs.  
+- Worked on **EDA visualizations** for text-based features and contributed to overall results reporting and documentation.
+- Focused on the **vision model pipeline**, experimenting with EfficientNet-B0/B2 and fine-tuning a VGG-16 architecture.  
+
+
 
