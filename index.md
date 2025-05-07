@@ -329,7 +329,7 @@ This project was a joint effort between two contributors, each responsible for s
 **Roles**:  
 - Handled the **text classification pipeline**, implementing and evaluating BiLSTM, DistilBERT, and ELECTRA-Small models.  
 - Managed training, hyperparameter tuning, and validation metric logging for the text models.  
-- Built the entire **project website** using Jekyll, including layout structure, content organization. 
+- Built the **project website** using Jekyll, including layout structure, content organization. 
 
 ---
 
